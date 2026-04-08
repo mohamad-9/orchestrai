@@ -13,18 +13,26 @@ def normalize_skills(skills: list[str]) -> list[str]:
 
     for skill in skills:
         skill_lower = skill.lower()
-        normalized.append(mapping.get(skill_lower, skill_lower))
+
+        # keep original
+        normalized.append(skill_lower)
+
+        # add mapped version if exists
+        if skill_lower in mapping:
+            normalized.append(mapping[skill_lower])
 
     return list(set(normalized))
 
 def analyze_cv(cv_text: str) -> CVAnalysis:
+    print("🔥 ANALYZE_CV STARTED")
+
     try:
         skills = extract_skills_with_llm(cv_text)
         skills = normalize_skills(skills)
-    except Exception:
-        skills = ["python"]  # fallback
+    except Exception as e:
+        print("❌ ERROR IN LLM:", e)
+        raise e  # IMPORTANT: do NOT hide it
 
     return CVAnalysis(skills=skills)
-
     
 

@@ -9,10 +9,6 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def extract_skills_with_llm(cv_text: str) -> list[str]:
-    """
-    Extract skills using structured LLM output.
-    """
-
     prompt = f"""
 You are an expert AI system that extracts technical skills from CVs.
 
@@ -40,8 +36,14 @@ CV:
 
     content = response.choices[0].message.content
 
+    print("\n=== LLM RAW RESPONSE ===")
+    print(content)
+    print("========================\n")
+
     try:
+        import json
         data = json.loads(content)
         return data.get("skills", [])
-    except:
+    except Exception as e:
+        print("JSON ERROR:", e)
         return []
