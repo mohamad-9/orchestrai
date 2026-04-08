@@ -1,20 +1,35 @@
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
+import json
 
-client = OpenAI()
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def extract_skills_with_llm(cv_text: str) -> list[str]:
     """
-    Use LLM to extract skills from CV text.
+    Extract skills using structured LLM output.
     """
 
     prompt = f"""
-    Extract all technical skills from this CV.
-    Return ONLY a Python list.
+You are an expert AI system that extracts technical skills from CVs.
 
-    CV:
-    {cv_text}
-    """
+Extract all relevant technical skills from the text below.
+
+Rules:
+- Include tools, frameworks, and concepts
+- Examples: Python, TensorFlow, NLP, Docker, AWS
+- Be comprehensive
+- Return ONLY valid JSON
+
+Format:
+{{ "skills": ["skill1", "skill2"] }}
+
+CV:
+{cv_text}
+"""
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -26,8 +41,7 @@ def extract_skills_with_llm(cv_text: str) -> list[str]:
     content = response.choices[0].message.content
 
     try:
-        skills = eval(content)
+        data = json.loads(content)
+        return data.get("skills", [])
     except:
-        skills = []
-
-    return skills
+        return []
