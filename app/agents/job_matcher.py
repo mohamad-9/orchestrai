@@ -16,23 +16,42 @@ JOB_DATABASE = [
         "skills": ["python", "machine learning", "nlp", "sql"],
     },
 ]
+SKILL_EQUIVALENTS = {
+    "tensorflow": "deep learning",
+    "pytorch": "deep learning",
+    "neural networks": "deep learning",
+    "transformers": "nlp",
+}
 
+def normalize_for_matching(skills: list[str]) -> list[str]:
+    normalized = []
+
+    for skill in skills:
+        skill_lower = skill.lower()
+
+        normalized.append(skill_lower)
+
+        if skill_lower in SKILL_EQUIVALENTS:
+            normalized.append(SKILL_EQUIVALENTS[skill_lower])
+
+    return list(set(normalized))
 
 def match_jobs(user_skills: list[str], target_role: str | None = None) -> list[JobMatch]:
-    """
-    Match user skills with jobs.
-    """
-
     results = []
+
+    # 🔥 ADD THIS LINE
+    user_skills = normalize_for_matching(user_skills)
 
     for job in JOB_DATABASE:
         job_skills = job["skills"]
 
-        # Calculate overlap
         matched = set(user_skills) & set(job_skills)
-        score = len(matched) / len(job_skills)
 
-        # Optional filtering by target role
+        # 🔥 (optional improved scoring)
+        score = (len(matched) + 0.5 * len(user_skills)) / len(job_skills)
+        score = min(score, 1.0)
+        
+
         if target_role:
             if target_role.lower() not in job["title"].lower():
                 continue
