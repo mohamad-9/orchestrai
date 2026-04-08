@@ -16,6 +16,7 @@ class CVAnalysis(BaseModel):
 class JobMatch(BaseModel):
     job_title: str
     match_score: float
+    reasoning: str   # 🔥 NEW FIELD
 
 
 class SkillGap(BaseModel):
