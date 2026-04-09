@@ -7,25 +7,23 @@ from app.schemas.models import FinalResponse
 
 
 def run_pipeline(cv_text: str, target_role: str | None = None) -> FinalResponse:
-    """
-    Main orchestration pipeline.
-    """
 
-    # 1️⃣ CV Analysis
-    cv_analysis = analyze_cv(cv_text)
+    # 1️⃣ CV Analyzer
+    cv_msg = analyze_cv(cv_text)
+    print(f"{cv_msg.sender} → {cv_msg.receiver}: {cv_msg.content}")
+    skills = cv_msg.content["skills"]
 
-    # 2️⃣ Job Matching
-    job_matches = match_jobs(cv_analysis.skills, target_role)
+    # 2️⃣ Job Matcher
+    job_matches = match_jobs(skills, target_role)
 
-    # 3️⃣ Skill Gap Analysis
-    skill_gaps = find_skill_gaps(cv_analysis.skills, target_role)
+    # 3️⃣ Skill Gap
+    skill_gaps = find_skill_gaps(skills, target_role)
 
     # 4️⃣ Learning Path
     learning_path = generate_learning_path(skill_gaps.missing_skills)
 
-    # 5️⃣ Combine results
     return FinalResponse(
-        skills=cv_analysis.skills,
+        skills=skills,
         matched_jobs=job_matches,
         skill_gaps=skill_gaps.missing_skills,
         learning_path=learning_path.recommendations

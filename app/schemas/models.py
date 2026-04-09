@@ -2,6 +2,14 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
+
+
+class AgentMessage(BaseModel):
+    sender: str
+    receiver: str
+    content: dict
+
+    
 # -------- INPUT --------
 class CVRequest(BaseModel):
     cv_text: str
@@ -33,3 +41,5 @@ class FinalResponse(BaseModel):
     matched_jobs: List[JobMatch]
     skill_gaps: List[str]
     learning_path: List[str]
+
+  

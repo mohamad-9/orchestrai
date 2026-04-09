@@ -1,5 +1,6 @@
 from app.services.llm_service import extract_skills_with_llm
-from app.schemas.models import CVAnalysis
+from app.schemas.models import CVAnalysis, AgentMessage
+
 
 def normalize_skills(skills: list[str]) -> list[str]:
     mapping = {
@@ -23,16 +24,15 @@ def normalize_skills(skills: list[str]) -> list[str]:
 
     return list(set(normalized))
 
-def analyze_cv(cv_text: str) -> CVAnalysis:
-    print("🔥 ANALYZE_CV STARTED")
 
-    try:
-        skills = extract_skills_with_llm(cv_text)
-        skills = normalize_skills(skills)
-    except Exception as e:
-        print("❌ ERROR IN LLM:", e)
-        raise e  # IMPORTANT: do NOT hide it
+def analyze_cv(cv_text: str) -> AgentMessage:
+    skills = extract_skills_with_llm(cv_text)
+    skills = normalize_skills(skills)
 
-    return CVAnalysis(skills=skills)
+    return AgentMessage(
+        sender="cv_analyzer",
+        receiver="coordinator",
+        content={"skills": skills}
+    )
     
 
