@@ -20,7 +20,12 @@ def run_pipeline(cv_text: str, target_role: str | None = None, user_id: str = "d
     cv_msg = analyze_cv(cv_text)
     print(f"{cv_msg.sender} → {cv_msg.receiver}: {cv_msg.content}")
 
-    skills = cv_msg.content["skills"]
+    new_skills = cv_msg.content["skills"]
+
+    # 🔥 merge with previous memory
+    previous_skills = previous_data.get("skills", [])
+
+    skills = list(set(previous_skills + new_skills))
 
     # 2️⃣ Job Matcher
     job_matches = match_jobs(skills, target_role)
