@@ -14,6 +14,7 @@ class AgentMessage(BaseModel):
 class CVRequest(BaseModel):
     cv_text: str
     target_role: Optional[str] = None
+    user_id: str = "default_user"   # 🔥 NEW
 
 
 # -------- AGENT OUTPUTS --------

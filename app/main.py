@@ -10,7 +10,13 @@ def root():
     return {"message": "OrchestrAI is running 🚀"}
 
 
+
+
 @app.post("/analyze")
 def analyze_cv(request: CVRequest):
-    result = run_pipeline(request.cv_text, request.target_role)
+    result = run_pipeline(
+        request.cv_text,
+        request.target_role,
+        request.user_id   # 🔥 NEW
+    )
     return result

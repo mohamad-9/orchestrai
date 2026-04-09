@@ -2,15 +2,24 @@ from app.agents.cv_analyzer import analyze_cv
 from app.agents.job_matcher import match_jobs
 from app.agents.skill_gap import find_skill_gaps
 from app.agents.learning_path import generate_learning_path
+from app.services.memory_service import save_user_data, get_user_data
 
 from app.schemas.models import FinalResponse
 
 
-def run_pipeline(cv_text: str, target_role: str | None = None) -> FinalResponse:
+
+
+
+def run_pipeline(cv_text: str, target_role: str | None = None, user_id: str = "default_user"):
+
+    # 🔥 LOAD MEMORY
+    previous_data = get_user_data(user_id)
+    print("🧠 Previous memory:", previous_data)
 
     # 1️⃣ CV Analyzer
     cv_msg = analyze_cv(cv_text)
     print(f"{cv_msg.sender} → {cv_msg.receiver}: {cv_msg.content}")
+
     skills = cv_msg.content["skills"]
 
     # 2️⃣ Job Matcher
@@ -21,6 +30,12 @@ def run_pipeline(cv_text: str, target_role: str | None = None) -> FinalResponse:
 
     # 4️⃣ Learning Path
     learning_path = generate_learning_path(skill_gaps.missing_skills)
+
+    # 🔥 SAVE MEMORY
+    save_user_data(user_id, {
+        "skills": skills,
+        "target_role": target_role
+    })
 
     return FinalResponse(
         skills=skills,
