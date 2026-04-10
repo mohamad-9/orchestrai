@@ -1,3 +1,11 @@
-def parse_cv(file):
-    # For now, just return mock text
-    return "Mock CV text"
+import pdfplumber
+
+
+def parse_pdf(file) -> str:
+    text = ""
+
+    with pdfplumber.open(file) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text() + "\n"
+
+    return text
