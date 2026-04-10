@@ -8,54 +8,73 @@ function App() {
   const [file, setFile] = useState(null);
 
   const handleAnalyze = async () => {
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    let response;
+    try {
+      let response;
 
-    // 🔥 IF FILE EXISTS → use PDF endpoint
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("target_role", targetRole);
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("target_role", targetRole);
 
-      response = await fetch("http://127.0.0.1:8000/analyze-pdf", {
-        method: "POST",
-        body: formData,
-      });
+        response = await fetch("http://127.0.0.1:8000/analyze-pdf", {
+          method: "POST",
+          body: formData,
+        });
 
-    } else {
-      // 🔥 OTHERWISE → use text endpoint
-      response = await fetch("http://127.0.0.1:8000/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cv_text: cvText,
-          target_role: targetRole,
-          user_id: "demo_user",
-        }),
-      });
+      } else {
+        response = await fetch("http://127.0.0.1:8000/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cv_text: cvText,
+            target_role: targetRole,
+            user_id: "demo_user",
+          }),
+        });
+      }
+
+      const data = await response.json();
+      setResult(data);
+
+    } catch (error) {
+      console.error(error);
     }
 
-    const data = await response.json();
-    setResult(data);
-
-  } catch (error) {
-    console.error(error);
-  }
-
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   return (
     <div style={styles.container}>
+      
+      {/* 🔥 HEADER */}
       <h1 style={styles.title}>OrchestrAI 🚀</h1>
       <p style={styles.subtitle}>
         Multi-Agent AI Career Assistant
       </p>
 
+      {/* 🔥 ABOUT SECTION */}
+      <div style={styles.aboutBox}>
+        <h3>💡 What is OrchestrAI?</h3>
+        <p>
+          OrchestrAI is a multi-agent AI system that helps users analyze their CVs,
+          match with relevant jobs, identify skill gaps, and generate personalized
+          learning paths.
+        </p>
+
+        <h3>⚙️ How it works</h3>
+        <ul>
+          <li>🧠 CV Analyzer Agent extracts skills using AI</li>
+          <li>💼 Job Matcher Agent matches skills to jobs</li>
+          <li>⚠️ Skill Gap Agent finds missing skills</li>
+          <li>📚 Learning Agent generates learning recommendations</li>
+        </ul>
+      </div>
+
+      {/* INPUT */}
       <textarea
         placeholder="Paste your CV here..."
         value={cvText}
@@ -69,16 +88,21 @@ function App() {
         onChange={(e) => setTargetRole(e.target.value)}
         style={styles.input}
       />
+
+      <p style={{ marginTop: "10px" }}>Or upload your CV (PDF)</p>
+
       <input
-      type="file"
-      accept=".pdf"
-      onChange={(e) => setFile(e.target.files[0])}
-      style={{ marginBottom: "10px" }}
+        type="file"
+        accept=".pdf"
+        onChange={(e) => setFile(e.target.files[0])}
+        style={{ marginBottom: "10px" }}
       />
+
       <button onClick={handleAnalyze} style={styles.button}>
         {loading ? "Analyzing..." : "Analyze"}
       </button>
 
+      {/* RESULTS */}
       {result && (
         <div style={styles.results}>
           
@@ -98,7 +122,6 @@ function App() {
                 <p><strong>{job.job_title}</strong></p>
                 <p>Score: {job.match_score}</p>
                 <p style={{ color: "#555" }}>{job.reasoning}</p>
-                <p>Or upload your CV (PDF)</p>
               </div>
             ))}
           </div>
@@ -140,6 +163,12 @@ const styles = {
   subtitle: {
     textAlign: "center",
     color: "#777",
+    marginBottom: "20px",
+  },
+  aboutBox: {
+    background: "#eef6ff",
+    padding: "15px",
+    borderRadius: "10px",
     marginBottom: "20px",
   },
   textarea: {
