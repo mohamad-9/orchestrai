@@ -5,29 +5,49 @@ function App() {
   const [targetRole, setTargetRole] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
 
   const handleAnalyze = async () => {
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/analyze", {
+  try {
+    let response;
+
+    // 🔥 IF FILE EXISTS → use PDF endpoint
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("target_role", targetRole);
+
+      response = await fetch("http://127.0.0.1:8000/analyze-pdf", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        body: formData,
+      });
+
+    } else {
+      // 🔥 OTHERWISE → use text endpoint
+      response = await fetch("http://127.0.0.1:8000/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           cv_text: cvText,
           target_role: targetRole,
           user_id: "demo_user",
         }),
       });
-
-      const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      console.error(error);
     }
 
-    setLoading(false);
-  };
+    const data = await response.json();
+    setResult(data);
+
+  } catch (error) {
+    console.error(error);
+  }
+
+  setLoading(false);
+};
 
   return (
     <div style={styles.container}>
@@ -49,7 +69,12 @@ function App() {
         onChange={(e) => setTargetRole(e.target.value)}
         style={styles.input}
       />
-
+      <input
+      type="file"
+      accept=".pdf"
+      onChange={(e) => setFile(e.target.files[0])}
+      style={{ marginBottom: "10px" }}
+      />
       <button onClick={handleAnalyze} style={styles.button}>
         {loading ? "Analyzing..." : "Analyze"}
       </button>
@@ -73,6 +98,7 @@ function App() {
                 <p><strong>{job.job_title}</strong></p>
                 <p>Score: {job.match_score}</p>
                 <p style={{ color: "#555" }}>{job.reasoning}</p>
+                <p>Or upload your CV (PDF)</p>
               </div>
             ))}
           </div>
