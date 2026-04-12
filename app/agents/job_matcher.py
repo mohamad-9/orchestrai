@@ -16,12 +16,18 @@ JOB_DATABASE = [
     },
 ]
 
-# Skill equivalence mapping
+# 🔥 Improved skill equivalence (VERY IMPORTANT)
 SKILL_EQUIVALENTS = {
     "tensorflow": "deep learning",
     "pytorch": "deep learning",
     "neural networks": "deep learning",
+
     "transformers": "nlp",
+    "nlp": "machine learning",
+    "llms": "machine learning",
+    "large language models (llms)": "machine learning",
+
+    "hugging face inference api": "machine learning",
 }
 
 
@@ -34,7 +40,7 @@ def normalize_for_matching(skills: list[str]) -> list[str]:
         # keep original
         normalized.append(skill_lower)
 
-        # add equivalent skill
+        # add mapped version
         if skill_lower in SKILL_EQUIVALENTS:
             normalized.append(SKILL_EQUIVALENTS[skill_lower])
 
@@ -44,29 +50,33 @@ def normalize_for_matching(skills: list[str]) -> list[str]:
 def match_jobs(user_skills: list[str], target_role: str | None = None) -> list[JobMatch]:
     results = []
 
-    # 🔥 normalize user skills
+    # 🔥 normalize skills
     user_skills = normalize_for_matching(user_skills)
 
     for job in JOB_DATABASE:
         job_skills = job["skills"]
 
-        # match + missing
         matched = set(user_skills) & set(job_skills)
         missing = set(job_skills) - set(user_skills)
 
-        # 🔥 improved scoring
-        score = (len(matched) + 0.5 * len(user_skills)) / len(job_skills)
-        score = min(score, 1.0)
+        # 🔥 NEW REALISTIC SCORING
+        coverage = len(matched) / len(job_skills)
 
-        # optional filter
+        bonus = min(len(user_skills) / 20, 0.3)  # cap bonus
+
+        score = coverage + bonus
+        score = min(score, 0.95)  # NEVER 1 unless perfect
+
+        # filter by role
         if target_role:
             if target_role.lower() not in job["title"].lower():
                 continue
 
-        # 🔥 reasoning (clean + readable)
+        # 🔥 IMPROVED REASONING
         reason = (
-            f"Matched skills: {', '.join(sorted(matched)) if matched else 'none'}. "
-            f"Missing skills: {', '.join(sorted(missing)) if missing else 'none'}."
+            f"You match {len(matched)} required skills: {', '.join(sorted(matched)) if matched else 'none'}. "
+            f"You also have related skills: {', '.join(sorted(user_skills))}. "
+            f"Missing key skills: {', '.join(sorted(missing)) if missing else 'none'}."
         )
 
         results.append(
