@@ -50,52 +50,55 @@ function App() {
   return (
     <div style={styles.container}>
       
-      {/* 🔥 HEADER */}
       <h1 style={styles.title}>OrchestrAI 🚀</h1>
       <p style={styles.subtitle}>
         Multi-Agent AI Career Assistant
       </p>
 
-      {/* 🔥 ABOUT SECTION */}
+      {/* ABOUT */}
       <div style={styles.aboutBox}>
         <h3>💡 What is OrchestrAI?</h3>
         <p>
-          OrchestrAI is a multi-agent AI system that helps users analyze their CVs,
-          match with relevant jobs, identify skill gaps, and generate personalized
-          learning paths.
+          Analyze your CV using AI agents to match jobs, detect skill gaps,
+          and generate a personalized learning path.
         </p>
-
-        <h3>⚙️ How it works</h3>
-        <ul>
-          <li>🧠 CV Analyzer Agent extracts skills using AI</li>
-          <li>💼 Job Matcher Agent matches skills to jobs</li>
-          <li>⚠️ Skill Gap Agent finds missing skills</li>
-          <li>📚 Learning Agent generates learning recommendations</li>
-        </ul>
       </div>
 
-      {/* INPUT */}
+      {/* CV TEXT */}
+      <label>Paste your CV</label>
       <textarea
         placeholder="Paste your CV here..."
         value={cvText}
-        onChange={(e) => setCvText(e.target.value)}
+        onChange={(e) => {
+          setCvText(e.target.value);
+          if (e.target.value) setFile(null); // 🔥 disable file
+        }}
         style={styles.textarea}
+        disabled={file !== null}
       />
 
+      {/* OR */}
+      <p style={{ textAlign: "center", margin: "10px 0" }}>— OR —</p>
+
+      {/* FILE UPLOAD */}
+      <label>Upload CV (PDF)</label>
+      <input
+        type="file"
+        accept=".pdf"
+        onChange={(e) => {
+          setFile(e.target.files[0]);
+          if (e.target.files[0]) setCvText(""); // 🔥 disable text
+        }}
+        style={{ marginBottom: "10px" }}
+        disabled={cvText.length > 0}
+      />
+
+      {/* TARGET ROLE */}
       <input
         placeholder="Target Role (e.g. AI Engineer)"
         value={targetRole}
         onChange={(e) => setTargetRole(e.target.value)}
         style={styles.input}
-      />
-
-      <p style={{ marginTop: "10px" }}>Or upload your CV (PDF)</p>
-
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-        style={{ marginBottom: "10px" }}
       />
 
       <button onClick={handleAnalyze} style={styles.button}>
