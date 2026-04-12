@@ -1,30 +1,29 @@
 from app.schemas.models import SkillGap
 
+# same database as job matcher
+JOB_DATABASE = [
+    {
+        "title": "AI Engineer",
+        "skills": ["python", "machine learning", "deep learning", "docker", "aws"],
+    }
+]
 
-# Same job database (keep consistent with job matcher)
-JOB_SKILLS = {
-    "ai engineer": ["python", "machine learning", "deep learning", "docker", "aws"],
-    "backend developer": ["python", "fastapi", "django", "sql", "docker"],
-    "data scientist": ["python", "machine learning", "nlp", "sql"],
-}
+# 🔥 import normalization from job matcher
+from app.agents.job_matcher import normalize_for_matching
 
 
 def find_skill_gaps(user_skills: list[str], target_role: str | None = None) -> SkillGap:
-    """
-    Identify missing skills for a target role.
-    """
 
-    if not target_role:
-        return SkillGap(missing_skills=[])
+    user_skills = normalize_for_matching(user_skills)
 
-    role_key = target_role.lower()
+    for job in JOB_DATABASE:
+        if target_role and target_role.lower() not in job["title"].lower():
+            continue
 
-    if role_key not in JOB_SKILLS:
-        return SkillGap(missing_skills=[])
+        job_skills = job["skills"]
 
-    required_skills = set(JOB_SKILLS[role_key])
-    user_skills_set = set(user_skills)
+        missing = list(set(job_skills) - set(user_skills))
 
-    missing = list(required_skills - user_skills_set)
+        return SkillGap(missing_skills=missing)
 
-    return SkillGap(missing_skills=missing)
+    return SkillGap(missing_skills=[])
