@@ -1,14 +1,16 @@
-FROM node:20
+# Build stage
+FROM node:20 AS builder
 
 WORKDIR /app
-
-# Copy everything
 COPY . .
-
-# Clean install (important for Docker)
-RUN rm -rf node_modules package-lock.json
 RUN npm install
+RUN npm run build
 
-EXPOSE 5173
+# Serve stage
+FROM nginx:alpine
 
-CMD ["npm", "run", "dev", "--", "--host"]
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
