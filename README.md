@@ -4,6 +4,9 @@ OrchestrAI is a **hybrid multi-agent AI system** that helps users make smarter c
 
 The system analyzes CVs, matches job opportunities, identifies skill gaps, and generates personalized learning paths using a combination of **LLM-powered analysis and structured agent logic**.
 
+
+## Demo
+See full demo: OrchestrAI_Demo.pdf
 ---
 
 ## 💡 Key Features
@@ -81,3 +84,5 @@ The architecture is **designed to be extensible** to other domains.
 ## 🔗 Repository
 
 https://github.com/mohamad-9/orchestrai
+
+
