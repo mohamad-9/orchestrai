@@ -7,6 +7,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
 
+  // ✅ API URL from environment
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleAnalyze = async () => {
     setLoading(true);
 
@@ -18,13 +21,15 @@ function App() {
         formData.append("file", file);
         formData.append("target_role", targetRole);
 
-        response = await fetch("http://127.0.0.1:8000/analyze-pdf", {
+        // ✅ FIXED HERE
+        response = await fetch(`${API_URL}/analyze-pdf`, {
           method: "POST",
           body: formData,
         });
 
       } else {
-        response = await fetch("http://127.0.0.1:8000/analyze", {
+        // ✅ FIXED HERE
+        response = await fetch(`${API_URL}/analyze`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -41,7 +46,7 @@ function App() {
       setResult(data);
 
     } catch (error) {
-      console.error(error);
+      console.error("Error:", error);
     }
 
     setLoading(false);
@@ -55,7 +60,6 @@ function App() {
         Multi-Agent AI Career Assistant
       </p>
 
-      {/* ABOUT */}
       <div style={styles.aboutBox}>
         <h3>💡 What is OrchestrAI?</h3>
         <p>
@@ -64,36 +68,32 @@ function App() {
         </p>
       </div>
 
-      {/* CV TEXT */}
       <label>Paste your CV</label>
       <textarea
         placeholder="Paste your CV here..."
         value={cvText}
         onChange={(e) => {
           setCvText(e.target.value);
-          if (e.target.value) setFile(null); // 🔥 disable file
+          if (e.target.value) setFile(null);
         }}
         style={styles.textarea}
         disabled={file !== null}
       />
 
-      {/* OR */}
       <p style={{ textAlign: "center", margin: "10px 0" }}>— OR —</p>
 
-      {/* FILE UPLOAD */}
       <label>Upload CV (PDF)</label>
       <input
         type="file"
         accept=".pdf"
         onChange={(e) => {
           setFile(e.target.files[0]);
-          if (e.target.files[0]) setCvText(""); // 🔥 disable text
+          if (e.target.files[0]) setCvText("");
         }}
         style={{ marginBottom: "10px" }}
         disabled={cvText.length > 0}
       />
 
-      {/* TARGET ROLE */}
       <input
         placeholder="Target Role (e.g. AI Engineer)"
         value={targetRole}
@@ -105,7 +105,6 @@ function App() {
         {loading ? "Analyzing..." : "Analyze"}
       </button>
 
-      {/* RESULTS */}
       {result && (
         <div style={styles.results}>
           
