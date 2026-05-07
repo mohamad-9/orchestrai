@@ -1,89 +1,137 @@
 from app.schemas.models import JobMatch
 
+from app.services.semantic_skills import get_related_skills
+
+
 # Mock job database
 JOB_DATABASE = [
     {
         "title": "AI Engineer",
-        "skills": ["python", "machine learning", "deep learning", "docker", "aws"],
+        "skills": [
+            "python",
+            "machine learning",
+            "deep learning",
+            "docker",
+            "aws",
+        ],
     },
     {
         "title": "Backend Developer",
-        "skills": ["python", "fastapi", "django", "sql", "docker"],
+        "skills": [
+            "python",
+            "fastapi",
+            "django",
+            "sql",
+            "docker",
+        ],
     },
     {
         "title": "Data Scientist",
-        "skills": ["python", "machine learning", "nlp", "sql"],
+        "skills": [
+            "python",
+            "machine learning",
+            "nlp",
+            "sql",
+        ],
     },
 ]
 
-# 🔥 Improved skill equivalence (VERY IMPORTANT)
-SKILL_EQUIVALENTS = {
-    "tensorflow": "deep learning",
-    "pytorch": "deep learning",
-    "neural networks": "deep learning",
 
-    "transformers": "nlp",
-    "nlp": "machine learning",
-    "llms": "machine learning",
-    "large language models (llms)": "machine learning",
+def semantic_match_score(
+    user_skills: list[str],
+    required_skills: list[str]
+):
 
-    "hugging face inference api": "machine learning",
-}
+    matched = set()
+
+    semantic_matches = []
+
+    for required_skill in required_skills:
+
+        # direct match
+        if required_skill in user_skills:
+            matched.add(required_skill)
+            continue
+
+        # semantic match
+        for user_skill in user_skills:
+
+            related_skills = get_related_skills(user_skill)
+
+            if required_skill in related_skills:
+
+                semantic_matches.append(
+                    f"{user_skill} → {required_skill}"
+                )
+
+                matched.add(required_skill)
+
+    return matched, semantic_matches
 
 
-def normalize_for_matching(skills: list[str]) -> list[str]:
-    normalized = []
+def match_jobs(
+    user_skills: list[str],
+    target_role: str | None = None
+) -> list[JobMatch]:
 
-    for skill in skills:
-        skill_lower = skill.lower()
-
-        # keep original
-        normalized.append(skill_lower)
-
-        # add mapped version
-        if skill_lower in SKILL_EQUIVALENTS:
-            normalized.append(SKILL_EQUIVALENTS[skill_lower])
-
-    return list(set(normalized))
-
-
-def match_jobs(user_skills: list[str], target_role: str | None = None) -> list[JobMatch]:
     results = []
 
-    # 🔥 normalize skills
-    user_skills = normalize_for_matching(user_skills)
+    user_skills = [s.lower() for s in user_skills]
 
     for job in JOB_DATABASE:
-        job_skills = job["skills"]
-
-        matched = set(user_skills) & set(job_skills)
-        missing = set(job_skills) - set(user_skills)
-
-        # 🔥 NEW REALISTIC SCORING
-        coverage = len(matched) / len(job_skills)
-
-        bonus = min(len(user_skills) / 20, 0.3)  # cap bonus
-
-        score = coverage + bonus
-        score = min(score, 0.95)  # NEVER 1 unless perfect
 
         # filter by role
         if target_role:
             if target_role.lower() not in job["title"].lower():
                 continue
 
-        # 🔥 IMPROVED REASONING
-        reason = (
-            f"You match {len(matched)} required skills: {', '.join(sorted(matched)) if matched else 'none'}. "
-            f"You also have related skills: {', '.join(sorted(user_skills))}. "
-            f"Missing key skills: {', '.join(sorted(missing)) if missing else 'none'}."
+        required_skills = [
+            s.lower()
+            for s in job["skills"]
+        ]
+
+        matched, semantic_matches = semantic_match_score(
+            user_skills,
+            required_skills
+        )
+
+        missing = set(required_skills) - matched
+
+        # smarter scoring
+        coverage = len(matched) / len(required_skills)
+
+        bonus = min(
+            len(user_skills) / 20,
+            0.25
+        )
+
+        score = coverage + bonus
+
+        score = min(score, 0.95)
+
+        # reasoning
+        reasoning = (
+            f"You match {len(matched)} required skills: "
+            f"{', '.join(sorted(matched)) if matched else 'none'}. "
+        )
+
+        if semantic_matches:
+
+            reasoning += (
+                f"Semantic matches detected: "
+                f"{', '.join(semantic_matches)}. "
+            )
+
+        reasoning += (
+            f"Missing key skills: "
+            f"{', '.join(sorted(missing)) if missing else 'none'}."
         )
 
         results.append(
             JobMatch(
                 job_title=job["title"],
                 match_score=round(score, 2),
-                reasoning=reason,
+                reasoning=reasoning,
             )
         )
 
