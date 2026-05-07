@@ -35,7 +35,11 @@ class SkillGap(BaseModel):
 class LearningPath(BaseModel):
     recommendations: List[str]
 
-
+class CareerStrategist(BaseModel):
+    readiness_score: int
+    level: str
+    strategy: str
+    
 # -------- FINAL RESPONSE --------
 class FinalResponse(BaseModel):
     skills: List[str]
@@ -43,5 +47,6 @@ class FinalResponse(BaseModel):
     skill_gaps: List[str]
     learning_path: List[str]
     career_advice: str
+    strategist: CareerStrategist
 
   

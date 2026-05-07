@@ -1,4 +1,3 @@
-from openai import skills
 
 from app.agents.cv_analyzer import analyze_cv
 from app.agents.job_matcher import match_jobs
@@ -6,7 +5,7 @@ from app.agents.skill_gap import find_skill_gaps
 from app.agents.learning_path import generate_learning_path
 from app.services.memory_service import save_user_data, get_user_data
 from app.agents.career_advisor import generate_career_advice
-
+from app.agents.career_strategist import generate_career_strategy
 from app.schemas.models import FinalResponse
 
 
@@ -44,6 +43,19 @@ def run_pipeline(cv_text: str, target_role: str | None = None, user_id: str = "d
          skill_gaps=skill_gaps.missing_skills,
          target_role=target_role
         )
+    # 6️⃣ Career Strategist Agent
+
+    top_match_score = 0
+
+    if job_matches:
+        top_match_score = job_matches[0].match_score
+
+    strategist = generate_career_strategy(
+        skills=skills,
+        skill_gaps=skill_gaps.missing_skills,
+        target_role=target_role,
+        match_score=top_match_score
+     )
 
     # 🔥 SAVE MEMORY
     save_user_data(user_id, {
@@ -56,5 +68,7 @@ def run_pipeline(cv_text: str, target_role: str | None = None, user_id: str = "d
     matched_jobs=job_matches,
     skill_gaps=skill_gaps.missing_skills,
     learning_path=learning_path.recommendations,
-    career_advice=career_advice
+    career_advice=career_advice,
+    strategist=strategist
+    
 )
