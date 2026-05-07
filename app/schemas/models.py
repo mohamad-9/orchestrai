@@ -42,5 +42,6 @@ class FinalResponse(BaseModel):
     matched_jobs: List[JobMatch]
     skill_gaps: List[str]
     learning_path: List[str]
+    career_advice: str
 
   
