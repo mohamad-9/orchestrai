@@ -76,7 +76,7 @@ function App() {
           Multi-Agent AI Career Intelligence Platform
         </p>
 
-        {/* ABOUT */}
+        {/* HERO */}
 
         <div style={styles.heroCard}>
 
@@ -90,11 +90,13 @@ function App() {
 
         </div>
 
-        {/* INPUT SECTION */}
+        {/* INPUT */}
 
         <div style={styles.card}>
 
-          <h3>📄 CV Input</h3>
+          <h3 style={styles.inputTitle}>
+            📄 CV Input
+          </h3>
 
           <label style={styles.label}>
             Paste your CV
@@ -104,11 +106,13 @@ function App() {
             placeholder="Paste your CV here..."
             value={cvText}
             onChange={(e) => {
+
               setCvText(e.target.value);
 
               if (e.target.value) {
                 setFile(null);
               }
+
             }}
             style={styles.textarea}
             disabled={file !== null}
@@ -132,6 +136,7 @@ function App() {
               if (e.target.files[0]) {
                 setCvText("");
               }
+
             }}
             disabled={cvText.length > 0}
             style={styles.fileInput}
@@ -167,42 +172,48 @@ function App() {
 
             <div style={styles.readinessCard}>
 
-              <h2>🎯 Career Readiness</h2>
+              <h2 style={styles.readinessTitle}>
+                🎯 Career Readiness
+              </h2>
 
               <div style={styles.scoreCircle}>
                 {result.strategist.readiness_score}%
               </div>
 
-              <h3>
+              <h3 style={styles.readinessLevel}>
                 {result.strategist.level}
               </h3>
 
               <div style={styles.progressBar}>
+
                 <div
                   style={{
                     ...styles.progressFill,
                     width: `${result.strategist.readiness_score}%`,
                   }}
                 />
+
               </div>
 
             </div>
 
             {/* JOB MATCH */}
 
-            <div style={styles.card}>
+            <div style={styles.jobCard}>
 
-              <h2>💼 Job Match</h2>
+              <h2 style={styles.sectionTitle}>
+                💼 Job Match
+              </h2>
 
               {result.matched_jobs.map((job, i) => (
 
                 <div key={i}>
 
-                  <h3>
+                  <h3 style={styles.jobTitle}>
                     {job.job_title}
                   </h3>
 
-                  <p>
+                  <p style={styles.matchScore}>
                     Match Score:
                     <strong>
                       {" "}
@@ -224,7 +235,9 @@ function App() {
 
             <div style={styles.strategyCard}>
 
-              <h2>🧠 AI Career Strategist</h2>
+              <h2 style={styles.sectionTitle}>
+                🧠 AI Career Strategist
+              </h2>
 
               <p style={styles.strategyText}>
                 {result.strategist.strategy}
@@ -234,9 +247,11 @@ function App() {
 
             {/* SKILLS */}
 
-            <div style={styles.card}>
+            <div style={styles.skillsCard}>
 
-              <h2>🛠 Skills Intelligence</h2>
+              <h2 style={styles.sectionTitle}>
+                🛠 Skills Intelligence
+              </h2>
 
               <div style={styles.skillsGrid}>
 
@@ -257,9 +272,11 @@ function App() {
 
             {/* GAPS */}
 
-            <div style={styles.card}>
+            <div style={styles.gapsCard}>
 
-              <h2>⚠️ Skill Gaps</h2>
+              <h2 style={styles.sectionTitle}>
+                ⚠️ Skill Gaps
+              </h2>
 
               <div style={styles.skillsGrid}>
 
@@ -280,15 +297,20 @@ function App() {
 
             {/* LEARNING */}
 
-            <div style={styles.card}>
+            <div style={styles.learningCard}>
 
-              <h2>📚 Learning Roadmap</h2>
+              <h2 style={styles.sectionTitle}>
+                📚 Learning Roadmap
+              </h2>
 
-              <ul>
+              <ul style={styles.learningList}>
 
                 {result.learning_path.map((item, i) => (
 
-                  <li key={i}>
+                  <li
+                    key={i}
+                    style={styles.learningItem}
+                  >
                     {item}
                   </li>
 
@@ -302,7 +324,9 @@ function App() {
 
             <div style={styles.card}>
 
-              <h2>🚀 AI Career Advice</h2>
+              <h2 style={styles.sectionTitle}>
+                🚀 AI Career Advice
+              </h2>
 
               <p style={styles.strategyText}>
                 {result.career_advice}
@@ -323,7 +347,7 @@ function App() {
 const styles = {
 
   page: {
-    backgroundColor: "#f4f7fb",
+    backgroundColor: "#f3f6fb",
     minHeight: "100vh",
     padding: "30px",
   },
@@ -336,98 +360,173 @@ const styles = {
 
   title: {
     textAlign: "center",
-    fontSize: "48px",
+    fontSize: "52px",
+    fontWeight: "800",
     marginBottom: "10px",
+    color: "#111827",
   },
 
   subtitle: {
     textAlign: "center",
-    color: "#666",
-    marginBottom: "30px",
-    fontSize: "18px",
+    color: "#4b5563",
+    marginBottom: "35px",
+    fontSize: "20px",
   },
 
   heroCard: {
-    background: "linear-gradient(135deg, #4CAF50, #2196F3)",
+    background: "linear-gradient(135deg, #2563eb, #06b6d4)",
     color: "white",
-    padding: "25px",
-    borderRadius: "15px",
-    marginBottom: "25px",
+    padding: "30px",
+    borderRadius: "20px",
+    marginBottom: "30px",
+    boxShadow: "0 10px 25px rgba(37,99,235,0.2)",
   },
 
   card: {
     background: "white",
-    padding: "20px",
-    borderRadius: "15px",
+    padding: "25px",
+    borderRadius: "18px",
     marginBottom: "20px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+  },
+
+  jobCard: {
+    background: "#dbeafe",
+    padding: "25px",
+    borderRadius: "18px",
+    marginBottom: "20px",
+    borderLeft: "8px solid #2563eb",
+    boxShadow: "0 6px 18px rgba(37,99,235,0.15)",
+    color: "#111827",
+  },
+
+  skillsCard: {
+    background: "#dcfce7",
+    padding: "25px",
+    borderRadius: "18px",
+    marginBottom: "20px",
+    borderLeft: "8px solid #16a34a",
+    boxShadow: "0 6px 18px rgba(22,163,74,0.15)",
+    color: "#111827",
+  },
+
+  gapsCard: {
+    background: "#fee2e2",
+    padding: "25px",
+    borderRadius: "18px",
+    marginBottom: "20px",
+    borderLeft: "8px solid #dc2626",
+    boxShadow: "0 6px 18px rgba(220,38,38,0.15)",
+    color: "#111827",
+  },
+
+  learningCard: {
+    background: "#ffedd5",
+    padding: "25px",
+    borderRadius: "18px",
+    marginBottom: "20px",
+    borderLeft: "8px solid #ea580c",
+    boxShadow: "0 6px 18px rgba(234,88,12,0.15)",
+    color: "#111827",
   },
 
   readinessCard: {
     background: "#111827",
     color: "white",
-    padding: "30px",
-    borderRadius: "20px",
-    marginBottom: "20px",
+    padding: "35px",
+    borderRadius: "22px",
+    marginBottom: "25px",
     textAlign: "center",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
   },
 
   strategyCard: {
     background: "#eef6ff",
     padding: "25px",
-    borderRadius: "15px",
+    borderRadius: "18px",
     marginBottom: "20px",
-    borderLeft: "6px solid #2196F3",
+    borderLeft: "8px solid #0ea5e9",
+    boxShadow: "0 6px 18px rgba(14,165,233,0.12)",
+  },
+
+  sectionTitle: {
+    fontSize: "32px",
+    fontWeight: "800",
+    marginBottom: "20px",
+    color: "#111827",
+  },
+
+  inputTitle: {
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: "20px",
+  },
+
+  readinessTitle: {
+    fontSize: "36px",
+    fontWeight: "800",
+    marginBottom: "20px",
+  },
+
+  readinessLevel: {
+    fontSize: "28px",
+    fontWeight: "700",
+    marginTop: "15px",
   },
 
   scoreCircle: {
-    width: "130px",
-    height: "130px",
+    width: "140px",
+    height: "140px",
     borderRadius: "50%",
-    background: "#4CAF50",
-    margin: "20px auto",
+    background: "#22c55e",
+    margin: "25px auto",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "32px",
-    fontWeight: "bold",
+    fontSize: "36px",
+    fontWeight: "800",
+    boxShadow: "0 6px 18px rgba(34,197,94,0.3)",
   },
 
   progressBar: {
     width: "100%",
-    height: "12px",
+    height: "14px",
     background: "#374151",
     borderRadius: "10px",
-    marginTop: "20px",
+    marginTop: "25px",
     overflow: "hidden",
   },
 
   progressFill: {
     height: "100%",
-    background: "#4CAF50",
+    background: "#22c55e",
   },
 
   label: {
-    fontWeight: "bold",
+    fontWeight: "700",
     display: "block",
-    marginBottom: "8px",
-    marginTop: "15px",
+    marginBottom: "10px",
+    marginTop: "18px",
+    color: "#111827",
   },
 
   textarea: {
     width: "100%",
-    minHeight: "140px",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "1px solid #ccc",
+    minHeight: "150px",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "1px solid #d1d5db",
+    fontSize: "15px",
   },
 
   input: {
     width: "100%",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "1px solid #ccc",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "1px solid #d1d5db",
     marginBottom: "20px",
+    fontSize: "15px",
   },
 
   fileInput: {
@@ -436,57 +535,89 @@ const styles = {
 
   button: {
     width: "100%",
-    padding: "14px",
+    padding: "16px",
     border: "none",
-    borderRadius: "10px",
-    background: "#4CAF50",
+    borderRadius: "12px",
+    background: "#2563eb",
     color: "white",
     fontSize: "18px",
     cursor: "pointer",
-    fontWeight: "bold",
+    fontWeight: "700",
+    boxShadow: "0 6px 18px rgba(37,99,235,0.25)",
   },
 
   reasoning: {
-    color: "#555",
-    lineHeight: "1.6",
+    color: "#1f2937",
+    lineHeight: "1.8",
+    fontWeight: "500",
+    fontSize: "17px",
   },
 
   strategyText: {
-    lineHeight: "1.8",
-    color: "#333",
+    lineHeight: "2",
+    color: "#1f2937",
     whiteSpace: "pre-line",
+    fontSize: "17px",
   },
 
   skillsGrid: {
     display: "flex",
     flexWrap: "wrap",
-    gap: "10px",
+    gap: "12px",
   },
 
   skillBadge: {
-    background: "#dbeafe",
-    color: "#1e40af",
-    padding: "8px 14px",
-    borderRadius: "20px",
-    fontWeight: "bold",
+    background: "#bbf7d0",
+    color: "#166534",
+    padding: "10px 16px",
+    borderRadius: "25px",
+    fontWeight: "700",
+    fontSize: "15px",
   },
 
   gapBadge: {
-    background: "#fee2e2",
+    background: "#fecaca",
     color: "#991b1b",
-    padding: "8px 14px",
-    borderRadius: "20px",
-    fontWeight: "bold",
+    padding: "10px 16px",
+    borderRadius: "25px",
+    fontWeight: "700",
+    fontSize: "15px",
+  },
+
+  learningList: {
+    paddingLeft: "20px",
+  },
+
+  learningItem: {
+    marginBottom: "12px",
+    fontSize: "17px",
+    fontWeight: "600",
+    color: "#7c2d12",
+  },
+
+  jobTitle: {
+    fontSize: "28px",
+    fontWeight: "800",
+    color: "#1e3a8a",
+    marginBottom: "10px",
+  },
+
+  matchScore: {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#111827",
+    marginBottom: "15px",
   },
 
   resultsContainer: {
-    marginTop: "30px",
+    marginTop: "35px",
   },
 
   orText: {
     textAlign: "center",
-    margin: "15px 0",
-    color: "#666",
+    margin: "18px 0",
+    color: "#6b7280",
+    fontWeight: "600",
   },
 };
 
